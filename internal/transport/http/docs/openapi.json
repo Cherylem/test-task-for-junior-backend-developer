@@ -1,0 +1,425 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Task Service API",
+    "version": "1.1.0",
+    "description": "HTTP API for task instances and recurring task templates. A task instance may be created manually or generated from a recurring task template."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Tasks",
+      "description": "Operations with task instances"
+    },
+    {
+      "name": "Task Templates",
+      "description": "Operations with recurring task templates"
+    }
+  ],
+  "paths": {
+      "/api/v1/tasks": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "List task instances",
+        "responses": {
+          "200": {
+            "description": "Task instance list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Task" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Tasks"],
+        "summary": "Create task instance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created task instance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Task" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/api/v1/tasks/{id}": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get task instance by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task instance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Task" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "put": {
+        "tags": ["Tasks"],
+        "summary": "Update task instance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated task instance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Task" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Tasks"],
+        "summary": "Delete task instance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/v1/task-templates": {
+      "get": {
+        "tags": ["Task Templates"],
+        "summary": "List recurring task templates",
+        "responses": {
+          "200": {
+            "description": "Template list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TaskTemplate" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Task Templates"],
+        "summary": "Create recurring task template",
+        "description": "Creates a recurring task template and immediately generates task instances for the current scheduling window.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TaskTemplateMutation" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created template",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskTemplate" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/api/v1/task-templates/{id}": {
+      "get": {
+        "tags": ["Task Templates"],
+        "summary": "Get recurring task template by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskTemplate" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "put": {
+        "tags": ["Task Templates"],
+        "summary": "Update recurring task template",
+        "description": "Updates the recurring task template, removes only future generated task instances in status `new`, and regenerates future task instances using the new settings.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TaskTemplateMutation" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated template",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskTemplate" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Task Templates"],
+        "summary": "Deactivate recurring task template",
+        "description": "Soft-deactivates the recurring task template. New generated task instances will no longer be created, future generated task instances in status `new` will be removed, and past, current, in-progress, or completed task instances will remain available.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deactivated" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "example": "Prepare release" },
+          "description": { "type": "string", "example": "Collect release notes and check migrations" },
+          "status": {
+            "type": "string",
+            "enum": ["new", "in_progress", "done"],
+            "example": "new"
+          }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "required": ["title", "status"],
+        "properties": {
+          "title": { "type": "string", "example": "Prepare release" },
+          "description": { "type": "string", "example": "Collect release notes and check migrations" },
+          "status": {
+            "type": "string",
+            "enum": ["new", "in_progress", "done"],
+            "example": "in_progress"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "required": ["id", "title", "description", "status", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "title": { "type": "string", "example": "Call patients" },
+          "description": { "type": "string", "example": "Daily reminder calls" },
+          "status": {
+            "type": "string",
+            "enum": ["new", "in_progress", "done"],
+            "example": "new"
+          },
+          "template_id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "description": "Identifier of the recurring task template that generated this task instance. Absent for manually created task instances.",
+            "example": 7
+          },
+          "scheduled_for": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Planned calendar date for a generated task instance. This field is omitted or null for manually created task instances that do not have a scheduled date.",
+            "example": "2026-04-21"
+          },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" },
+          "updated_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" }
+        }
+      },
+      "TaskTemplateMutation": {
+        "type": "object",
+        "required": ["title", "timezone", "start_date", "recurrence_type", "recurrence_settings"],
+        "properties": {
+          "title": { "type": "string", "example": "Weekly inventory" },
+          "description": { "type": "string", "example": "Check medical supplies" },
+          "timezone": { "type": "string", "example": "Europe/Moscow" },
+          "start_date": { "type": "string", "format": "date", "example": "2026-04-20" },
+          "end_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
+          "recurrence_type": {
+            "type": "string",
+            "enum": ["daily", "monthly", "specific_dates", "even_odd", "weekdays"],
+            "example": "weekdays"
+          },
+          "recurrence_settings": { "$ref": "#/components/schemas/RecurrenceSettings" }
+        }
+      },
+      "TaskTemplate": {
+        "type": "object",
+        "required": ["id", "title", "description", "timezone", "start_date", "recurrence_type", "recurrence_settings", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 7 },
+          "title": { "type": "string", "example": "Weekly inventory" },
+          "description": { "type": "string", "example": "Check medical supplies" },
+          "timezone": { "type": "string", "example": "Europe/Moscow" },
+          "start_date": { "type": "string", "format": "date", "example": "2026-04-20" },
+          "end_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
+          "recurrence_type": {
+            "type": "string",
+            "enum": ["daily", "monthly", "specific_dates", "even_odd", "weekdays"],
+            "example": "weekdays"
+          },
+          "recurrence_settings": { "$ref": "#/components/schemas/RecurrenceSettings" },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" },
+          "updated_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" }
+        }
+      },
+      "RecurrenceSettings": {
+        "type": "object",
+        "description": "Settings for the selected `recurrence_type`. Only the fields that belong to the selected type must be present; all unrelated fields should be omitted.",
+        "properties": {
+          "every_n_days": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Use only with `daily`. Creates a task instance every N-th day starting from `start_date`.",
+            "example": 2
+          },
+          "day_of_month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31,
+            "description": "Use only with `monthly`. Creates a task instance on this day of the month.",
+            "example": 31
+          },
+          "short_month_strategy": {
+            "type": "string",
+            "enum": ["skip", "last_day"],
+            "description": "Use only with `monthly`. Controls what to do when `day_of_month` does not exist in a shorter month.",
+            "example": "last_day"
+          },
+          "specific_dates": {
+            "type": "array",
+            "items": { "type": "string", "format": "date" },
+            "description": "Use only with `specific_dates`. Task instances are generated only for the listed calendar dates.",
+            "example": ["2026-05-01", "2026-05-09"]
+          },
+          "even_odd_mode": {
+            "type": "string",
+            "enum": ["even", "odd"],
+            "description": "Use only with `even_odd`. `even` generates task instances on even day numbers, `odd` on odd day numbers.",
+            "example": "even"
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+            },
+            "description": "Use only with `weekdays`. Task instances are generated on the listed repeating weekdays.",
+            "example": ["monday", "wednesday", "friday"]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "task not found" }
+        }
+      }
+    }
+  }
+}
