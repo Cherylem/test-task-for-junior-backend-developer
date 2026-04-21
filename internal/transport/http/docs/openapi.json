@@ -10,6 +10,7 @@
       "url": "http://localhost:8080"
     }
   ],
+  "security": [],
   "tags": [
     {
       "name": "Tasks",
@@ -21,9 +22,12 @@
     }
   ],
   "paths": {
-      "/api/v1/tasks": {
+    "/api/v1/tasks": {
       "get": {
-        "tags": ["Tasks"],
+        "operationId": "listTasks",
+        "tags": [
+          "Tasks"
+        ],
         "summary": "List task instances",
         "responses": {
           "200": {
@@ -32,7 +36,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Task" }
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
                 }
               }
             }
@@ -40,13 +46,18 @@
         }
       },
       "post": {
-        "tags": ["Tasks"],
+        "operationId": "createTask",
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Create task instance",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateTaskRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskRequest"
+              }
             }
           }
         },
@@ -55,24 +66,35 @@
             "description": "Created task instance",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Task" }
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
         }
       }
     },
     "/api/v1/tasks/{id}": {
       "get": {
-        "tags": ["Tasks"],
+        "operationId": "getTaskById",
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Get task instance by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
           }
         ],
         "responses": {
@@ -80,29 +102,45 @@
             "description": "Task instance",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Task" }
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
               }
             }
           },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "put": {
-        "tags": ["Tasks"],
+        "operationId": "updateTask",
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Update task instance",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/UpdateTaskRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskRequest"
+              }
             }
           }
         },
@@ -111,35 +149,59 @@
             "description": "Updated task instance",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Task" }
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "delete": {
-        "tags": ["Tasks"],
+        "operationId": "deleteTask",
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Delete task instance",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
           }
         ],
         "responses": {
-          "204": { "description": "Deleted" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "204": {
+            "description": "Deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/task-templates": {
       "get": {
-        "tags": ["Task Templates"],
+        "operationId": "listTaskTemplates",
+        "tags": [
+          "Task Templates"
+        ],
         "summary": "List recurring task templates",
+        "description": "Returns active recurring task templates. Deactivated templates are hidden from this list.",
         "responses": {
           "200": {
             "description": "Template list",
@@ -147,7 +209,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/TaskTemplate" }
+                  "items": {
+                    "$ref": "#/components/schemas/TaskTemplate"
+                  }
                 }
               }
             }
@@ -155,14 +219,95 @@
         }
       },
       "post": {
-        "tags": ["Task Templates"],
+        "operationId": "createTaskTemplate",
+        "tags": [
+          "Task Templates"
+        ],
         "summary": "Create recurring task template",
         "description": "Creates a recurring task template and immediately generates task instances for the current scheduling window.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/TaskTemplateMutation" }
+              "schema": {
+                "$ref": "#/components/schemas/TaskTemplateMutation"
+              },
+              "examples": {
+                "weekdays": {
+                  "summary": "Weekdays template",
+                  "value": {
+                    "title": "Weekly inventory",
+                    "description": "Check medical supplies",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "end_date": "2026-12-31",
+                    "recurrence_type": "weekdays",
+                    "recurrence_settings": {
+                      "weekdays": [
+                        "monday",
+                        "wednesday",
+                        "friday"
+                      ]
+                    }
+                  }
+                },
+                "daily": {
+                  "summary": "Every second day",
+                  "value": {
+                    "title": "Medication review",
+                    "description": "Review assigned patient medications",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "daily",
+                    "recurrence_settings": {
+                      "every_n_days": 2
+                    }
+                  }
+                },
+                "monthly": {
+                  "summary": "Monthly on day 31",
+                  "value": {
+                    "title": "Monthly inventory",
+                    "description": "Check monthly medical supplies",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "monthly",
+                    "recurrence_settings": {
+                      "day_of_month": 31,
+                      "short_month_strategy": "last_day"
+                    }
+                  }
+                },
+                "specific_dates": {
+                  "summary": "Specific dates",
+                  "value": {
+                    "title": "Holiday coverage",
+                    "description": "Prepare holiday coverage tasks",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "specific_dates",
+                    "recurrence_settings": {
+                      "specific_dates": [
+                        "2026-05-01",
+                        "2026-05-09"
+                      ]
+                    }
+                  }
+                },
+                "even_odd": {
+                  "summary": "Even days",
+                  "value": {
+                    "title": "Even day check",
+                    "description": "Run checks on even days",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "even_odd",
+                    "recurrence_settings": {
+                      "even_odd_mode": "even"
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -171,24 +316,35 @@
             "description": "Created template",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TaskTemplate" }
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTemplate"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
         }
       }
     },
     "/api/v1/task-templates/{id}": {
       "get": {
-        "tags": ["Task Templates"],
+        "operationId": "getTaskTemplateById",
+        "tags": [
+          "Task Templates"
+        ],
         "summary": "Get recurring task template by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
           }
         ],
         "responses": {
@@ -196,15 +352,25 @@
             "description": "Template",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TaskTemplate" }
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTemplate"
+                }
               }
             }
           },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "put": {
-        "tags": ["Task Templates"],
+        "operationId": "updateTaskTemplate",
+        "tags": [
+          "Task Templates"
+        ],
         "summary": "Update recurring task template",
         "description": "Updates the recurring task template, removes only future generated task instances in status `new`, and regenerates future task instances using the new settings.",
         "parameters": [
@@ -212,14 +378,96 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/TaskTemplateMutation" }
+              "schema": {
+                "$ref": "#/components/schemas/TaskTemplateMutation"
+              },
+              "examples": {
+                "weekdays": {
+                  "summary": "Weekdays template",
+                  "value": {
+                    "title": "Weekly inventory",
+                    "description": "Check medical supplies",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "end_date": "2026-12-31",
+                    "recurrence_type": "weekdays",
+                    "recurrence_settings": {
+                      "weekdays": [
+                        "monday",
+                        "wednesday",
+                        "friday"
+                      ]
+                    }
+                  }
+                },
+                "daily": {
+                  "summary": "Every second day",
+                  "value": {
+                    "title": "Medication review",
+                    "description": "Review assigned patient medications",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "daily",
+                    "recurrence_settings": {
+                      "every_n_days": 2
+                    }
+                  }
+                },
+                "monthly": {
+                  "summary": "Monthly on day 31",
+                  "value": {
+                    "title": "Monthly inventory",
+                    "description": "Check monthly medical supplies",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "monthly",
+                    "recurrence_settings": {
+                      "day_of_month": 31,
+                      "short_month_strategy": "last_day"
+                    }
+                  }
+                },
+                "specific_dates": {
+                  "summary": "Specific dates",
+                  "value": {
+                    "title": "Holiday coverage",
+                    "description": "Prepare holiday coverage tasks",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "specific_dates",
+                    "recurrence_settings": {
+                      "specific_dates": [
+                        "2026-05-01",
+                        "2026-05-09"
+                      ]
+                    }
+                  }
+                },
+                "even_odd": {
+                  "summary": "Even days",
+                  "value": {
+                    "title": "Even day check",
+                    "description": "Run checks on even days",
+                    "timezone": "Europe/Moscow",
+                    "start_date": "2026-04-20",
+                    "recurrence_type": "even_odd",
+                    "recurrence_settings": {
+                      "even_odd_mode": "even"
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -228,16 +476,25 @@
             "description": "Updated template",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TaskTemplate" }
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTemplate"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "delete": {
-        "tags": ["Task Templates"],
+        "operationId": "deactivateTaskTemplate",
+        "tags": [
+          "Task Templates"
+        ],
         "summary": "Deactivate recurring task template",
         "description": "Soft-deactivates the recurring task template. New generated task instances will no longer be created, future generated task instances in status `new` will be removed, and past, current, in-progress, or completed task instances will remain available.",
         "parameters": [
@@ -245,12 +502,23 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
           }
         ],
         "responses": {
-          "204": { "description": "Deactivated" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "204": {
+            "description": "Deactivated"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     }
@@ -261,7 +529,9 @@
         "description": "Bad request",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/Error" }
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -269,7 +539,9 @@
         "description": "Resource not found",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/Error" }
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       }
@@ -277,40 +549,88 @@
     "schemas": {
       "CreateTaskRequest": {
         "type": "object",
-        "required": ["title"],
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
         "properties": {
-          "title": { "type": "string", "example": "Prepare release" },
-          "description": { "type": "string", "example": "Collect release notes and check migrations" },
+          "title": {
+            "type": "string",
+            "example": "Prepare release"
+          },
+          "description": {
+            "type": "string",
+            "example": "Collect release notes and check migrations"
+          },
           "status": {
             "type": "string",
-            "enum": ["new", "in_progress", "done"],
+            "enum": [
+              "new",
+              "in_progress",
+              "done"
+            ],
             "example": "new"
           }
         }
       },
       "UpdateTaskRequest": {
         "type": "object",
-        "required": ["title", "status"],
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "status"
+        ],
         "properties": {
-          "title": { "type": "string", "example": "Prepare release" },
-          "description": { "type": "string", "example": "Collect release notes and check migrations" },
+          "title": {
+            "type": "string",
+            "example": "Prepare release"
+          },
+          "description": {
+            "type": "string",
+            "example": "Collect release notes and check migrations"
+          },
           "status": {
             "type": "string",
-            "enum": ["new", "in_progress", "done"],
+            "enum": [
+              "new",
+              "in_progress",
+              "done"
+            ],
             "example": "in_progress"
           }
         }
       },
       "Task": {
         "type": "object",
-        "required": ["id", "title", "description", "status", "created_at", "updated_at"],
+        "required": [
+          "id",
+          "title",
+          "description",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
         "properties": {
-          "id": { "type": "integer", "format": "int64", "example": 1 },
-          "title": { "type": "string", "example": "Call patients" },
-          "description": { "type": "string", "example": "Daily reminder calls" },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Call patients"
+          },
+          "description": {
+            "type": "string",
+            "example": "Daily reminder calls"
+          },
           "status": {
             "type": "string",
-            "enum": ["new", "in_progress", "done"],
+            "enum": [
+              "new",
+              "in_progress",
+              "done"
+            ],
             "example": "new"
           },
           "template_id": {
@@ -327,50 +647,155 @@
             "description": "Planned calendar date for a generated task instance. This field is omitted or null for manually created task instances that do not have a scheduled date.",
             "example": "2026-04-21"
           },
-          "created_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" },
-          "updated_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" }
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-20T09:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-20T09:00:00Z"
+          }
         }
       },
       "TaskTemplateMutation": {
         "type": "object",
-        "required": ["title", "timezone", "start_date", "recurrence_type", "recurrence_settings"],
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "timezone",
+          "start_date",
+          "recurrence_type",
+          "recurrence_settings"
+        ],
+        "example": {
+          "title": "Weekly inventory",
+          "description": "Check medical supplies",
+          "timezone": "Europe/Moscow",
+          "start_date": "2026-04-20",
+          "end_date": "2026-12-31",
+          "recurrence_type": "weekdays",
+          "recurrence_settings": {
+            "weekdays": [
+              "monday",
+              "wednesday",
+              "friday"
+            ]
+          }
+        },
         "properties": {
-          "title": { "type": "string", "example": "Weekly inventory" },
-          "description": { "type": "string", "example": "Check medical supplies" },
-          "timezone": { "type": "string", "example": "Europe/Moscow" },
-          "start_date": { "type": "string", "format": "date", "example": "2026-04-20" },
-          "end_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
+          "title": {
+            "type": "string",
+            "example": "Weekly inventory"
+          },
+          "description": {
+            "type": "string",
+            "example": "Check medical supplies"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Moscow"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-04-20"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-12-31"
+          },
           "recurrence_type": {
             "type": "string",
-            "enum": ["daily", "monthly", "specific_dates", "even_odd", "weekdays"],
+            "enum": [
+              "daily",
+              "monthly",
+              "specific_dates",
+              "even_odd",
+              "weekdays"
+            ],
             "example": "weekdays"
           },
-          "recurrence_settings": { "$ref": "#/components/schemas/RecurrenceSettings" }
+          "recurrence_settings": {
+            "$ref": "#/components/schemas/RecurrenceSettings"
+          }
         }
       },
       "TaskTemplate": {
         "type": "object",
-        "required": ["id", "title", "description", "timezone", "start_date", "recurrence_type", "recurrence_settings", "created_at", "updated_at"],
+        "required": [
+          "id",
+          "title",
+          "description",
+          "timezone",
+          "start_date",
+          "recurrence_type",
+          "recurrence_settings",
+          "created_at",
+          "updated_at"
+        ],
         "properties": {
-          "id": { "type": "integer", "format": "int64", "example": 7 },
-          "title": { "type": "string", "example": "Weekly inventory" },
-          "description": { "type": "string", "example": "Check medical supplies" },
-          "timezone": { "type": "string", "example": "Europe/Moscow" },
-          "start_date": { "type": "string", "format": "date", "example": "2026-04-20" },
-          "end_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 7
+          },
+          "title": {
+            "type": "string",
+            "example": "Weekly inventory"
+          },
+          "description": {
+            "type": "string",
+            "example": "Check medical supplies"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Moscow"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-04-20"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-12-31"
+          },
           "recurrence_type": {
             "type": "string",
-            "enum": ["daily", "monthly", "specific_dates", "even_odd", "weekdays"],
+            "enum": [
+              "daily",
+              "monthly",
+              "specific_dates",
+              "even_odd",
+              "weekdays"
+            ],
             "example": "weekdays"
           },
-          "recurrence_settings": { "$ref": "#/components/schemas/RecurrenceSettings" },
-          "created_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" },
-          "updated_at": { "type": "string", "format": "date-time", "example": "2026-04-20T09:00:00Z" }
+          "recurrence_settings": {
+            "$ref": "#/components/schemas/RecurrenceSettings"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-20T09:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-20T09:00:00Z"
+          }
         }
       },
       "RecurrenceSettings": {
         "type": "object",
-        "description": "Settings for the selected `recurrence_type`. Only the fields that belong to the selected type must be present; all unrelated fields should be omitted.",
+        "additionalProperties": false,
+        "description": "Settings for the selected `recurrence_type`. Only the fields that belong to the selected type must be present; all unrelated fields should be omitted: `daily` uses `every_n_days`; `monthly` uses `day_of_month` and `short_month_strategy`; `specific_dates` uses `specific_dates`; `even_odd` uses `even_odd_mode`; `weekdays` uses `weekdays`.",
         "properties": {
           "every_n_days": {
             "type": "integer",
@@ -387,19 +812,31 @@
           },
           "short_month_strategy": {
             "type": "string",
-            "enum": ["skip", "last_day"],
+            "enum": [
+              "skip",
+              "last_day"
+            ],
             "description": "Use only with `monthly`. Controls what to do when `day_of_month` does not exist in a shorter month.",
             "example": "last_day"
           },
           "specific_dates": {
             "type": "array",
-            "items": { "type": "string", "format": "date" },
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
             "description": "Use only with `specific_dates`. Task instances are generated only for the listed calendar dates.",
-            "example": ["2026-05-01", "2026-05-09"]
+            "example": [
+              "2026-05-01",
+              "2026-05-09"
+            ]
           },
           "even_odd_mode": {
             "type": "string",
-            "enum": ["even", "odd"],
+            "enum": [
+              "even",
+              "odd"
+            ],
             "description": "Use only with `even_odd`. `even` generates task instances on even day numbers, `odd` on odd day numbers.",
             "example": "even"
           },
@@ -407,17 +844,32 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+              "enum": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
             },
             "description": "Use only with `weekdays`. Task instances are generated on the listed repeating weekdays.",
-            "example": ["monday", "wednesday", "friday"]
+            "example": [
+              "monday",
+              "wednesday",
+              "friday"
+            ]
           }
         }
       },
       "Error": {
         "type": "object",
         "properties": {
-          "error": { "type": "string", "example": "task not found" }
+          "error": {
+            "type": "string",
+            "example": "task not found"
+          }
         }
       }
     }
